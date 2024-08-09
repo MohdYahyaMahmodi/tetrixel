@@ -1,7 +1,7 @@
 {
-  "name": "Tetris Neocities",
-  "short_name": "Tetris",
-  "description": "The #1 Video Game on Neocities",
+  "name": "Tetrixel",
+  "short_name": "Tetrixel",
+  "description": "Web version of the popular tetris game.",
   "start_url": "/index.html",
   "display": "standalone",
   "background_color": "#000000",
