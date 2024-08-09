@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tetris Game</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+    <style>
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+        }
+        #gameBoard {
+            border: 2px solid #333;
+            background-color: #000000;
+        }
+        #nextPiece {
+            background-color: #000000;
+        }
+        .key {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            background-color: #111;
+        }
+        .key-space {
+            width: 120px;
+            height: 40px;
+            border: 1px solid #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 16px;
+            background-color: #111;
+        }
+        @media (max-width: 767px) {
+            body {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+            .game-container {
+                height: auto;
+                max-height: 100vh;
+                padding-top: 1rem;
+                padding-bottom: 1rem;
+            }
+            #gameBoard {
+                height: 70vh;
+                width: calc(70vh / 2);
+            }
+            .controls, .desktop-only {
+                display: none;
+            }
+            .game-info {
+                display: flex;
+                justify-content: space-between;
+                align-items: stretch;
+                width: 100%;
+                margin-top: 1rem;
+            }
+            .game-info > div {
+                width: 48%;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+            #nextPiece {
+                width: 80px;
+                height: 80px;
+            }
+            .next-piece-container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+        @media (min-width: 768px) {
+            .game-container {
+                flex-direction: row;
+                justify-content: center;
+                gap: 2rem;
+                height: 100vh;
+            }
+            #gameBoard {
+                height: 90vh;
+                width: calc(90vh / 2);
+            }
+            .game-info {
+                display: block;
+            }
+            .next-piece-container {
+                margin-top: 1rem;
+            }
+            #nextPiece {
+                width: 120px;
+                height: 120px;
+            }
+        }
+    </style>
+</head>
+<body class="p-4">
+    <div class="text-center w-full h-full flex flex-col">
+        <div class="game-container flex-grow">
+            <div class="mb-4 lg:mb-0 flex-shrink-0">
+                <div class="relative">
+                    <canvas id="gameBoard" width="300" height="600"></canvas>
+                    <div id="gameOver" class="absolute inset-0 bg-black bg-opacity-75 flex items-center justify-center hidden">
+                        <p class="text-white text-3xl font-bold">Game Over</p>
+                    </div>
+                </div>
+            </div>
+            <div class="w-full max-w-sm flex flex-col justify-between h-full lg:h-auto">
+                <div class="space-y-4">
+                    <div class="game-info">
+                        <div class="border border-gray-800 p-2 lg:p-4">
+                            <p class="text-sm lg:text-xl mb-1">Score: <span id="score" class="font-bold">0</span></p>
+                            <p class="text-sm lg:text-xl">Level: <span id="level" class="font-bold">1</span></p>
+                        </div>
+                        <div class="next-piece-container border border-gray-800 p-2 lg:p-4">
+                            <p class="text-sm lg:text-xl mb-2">Next:</p>
+                            <canvas id="nextPiece" width="120" height="120" class="border border-gray-700 mx-auto"></canvas>
+                        </div>
+                    </div>
+                    <button id="startButton" class="bg-gray-800 text-white hover:bg-gray-700 font-bold py-2 px-4 w-full text-lg transition duration-300">
+                        Start Game
+                    </button>
+                    <div class="controls border border-gray-800 p-4">
+                        <p class="text-xl mb-4">Controls:</p>
+                        <div class="flex flex-col items-center mb-4">
+                            <p class="text-sm mb-1">Rotate</p>
+                            <div class="key mb-2">↑</div>
+                            <div class="flex justify-center items-center space-x-4">
+                                <div class="key">←</div>
+                                <div class="key">↓</div>
+                                <div class="key">→</div>
+                            </div>
+                            <div class="grid grid-cols-3 gap-4 text-sm mt-1">
+                                <p class="text-center">Left</p>
+                                <p class="text-center">Soft Drop</p>
+                                <p class="text-center">Right</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <div class="key-space mb-2">Space</div>
+                            <p class="text-sm">Hard Drop</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="tetris.js"></script>
+</body>
+</html>
