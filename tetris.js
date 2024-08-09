@@ -10,6 +10,7 @@ const gameOverElement = document.getElementById('gameOver');
 const ROWS = 20;
 const COLS = 10;
 const BLOCK_SIZE = 30;
+const BEVEL_SIZE = 3;
 const COLORS = ['#FF0D72', '#0DC2FF', '#0DFF72', '#F538FF', '#FF8E0D', '#FFE138', '#3877FF'];
 
 let board = Array(ROWS).fill().map(() => Array(COLS).fill(0));
@@ -33,6 +34,62 @@ const SHAPES = [
     [[1, 1, 1], [0, 0, 1]]
 ];
 
+function drawBeveledBlock(ctx, x, y, color, size = BLOCK_SIZE) {
+    const bevelSize = size === BLOCK_SIZE ? BEVEL_SIZE : Math.max(1, Math.floor(size / 10));
+
+    // Main block
+    ctx.fillStyle = color;
+    ctx.fillRect(x, y, size, size);
+
+    // Top bevel
+    ctx.fillStyle = lightenColor(color, 30);
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + size, y);
+    ctx.lineTo(x + size - bevelSize, y + bevelSize);
+    ctx.lineTo(x + bevelSize, y + bevelSize);
+    ctx.closePath();
+    ctx.fill();
+
+    // Left bevel
+    ctx.fillStyle = lightenColor(color, 15);
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x, y + size);
+    ctx.lineTo(x + bevelSize, y + size - bevelSize);
+    ctx.lineTo(x + bevelSize, y + bevelSize);
+    ctx.closePath();
+    ctx.fill();
+
+    // Bottom shadow
+    ctx.fillStyle = darkenColor(color, 30);
+    ctx.beginPath();
+    ctx.moveTo(x, y + size);
+    ctx.lineTo(x + size, y + size);
+    ctx.lineTo(x + size - bevelSize, y + size - bevelSize);
+    ctx.lineTo(x + bevelSize, y + size - bevelSize);
+    ctx.closePath();
+    ctx.fill();
+
+    // Right shadow
+    ctx.fillStyle = darkenColor(color, 15);
+    ctx.beginPath();
+    ctx.moveTo(x + size, y);
+    ctx.lineTo(x + size, y + size);
+    ctx.lineTo(x + size - bevelSize, y + size - bevelSize);
+    ctx.lineTo(x + size - bevelSize, y + bevelSize);
+    ctx.closePath();
+    ctx.fill();
+}
+
+function lightenColor(color, amount) {
+    return '#' + color.replace(/^#/, '').replace(/../g, color => ('0' + Math.min(255, Math.max(0, parseInt(color, 16) + amount)).toString(16)).substr(-2));
+}
+
+function darkenColor(color, amount) {
+    return '#' + color.replace(/^#/, '').replace(/../g, color => ('0' + Math.max(0, Math.min(255, parseInt(color, 16) - amount)).toString(16)).substr(-2));
+}
+
 class Piece {
     constructor(shape, color) {
         this.shape = shape;
@@ -42,13 +99,10 @@ class Piece {
     }
 
     draw(ctx, offsetX = 0, offsetY = 0) {
-        ctx.fillStyle = this.color;
-        ctx.strokeStyle = 'white';
         this.shape.forEach((row, y) => {
             row.forEach((value, x) => {
                 if (value) {
-                    ctx.fillRect((this.x + x + offsetX) * BLOCK_SIZE, (this.y + y + offsetY) * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
-                    ctx.strokeRect((this.x + x + offsetX) * BLOCK_SIZE, (this.y + y + offsetY) * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+                    drawBeveledBlock(ctx, (this.x + x + offsetX) * BLOCK_SIZE, (this.y + y + offsetY) * BLOCK_SIZE, this.color);
                 }
             });
         });
@@ -64,16 +118,15 @@ class Piece {
         }
         ghostPiece.y--;
 
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+        ctx.globalAlpha = 0.3;
         ghostPiece.shape.forEach((row, y) => {
             row.forEach((value, x) => {
                 if (value) {
-                    ctx.fillRect((ghostPiece.x + x) * BLOCK_SIZE, (ghostPiece.y + y) * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
-                    ctx.strokeRect((ghostPiece.x + x) * BLOCK_SIZE, (ghostPiece.y + y) * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+                    drawBeveledBlock(ctx, (ghostPiece.x + x) * BLOCK_SIZE, (ghostPiece.y + y) * BLOCK_SIZE, this.color);
                 }
             });
         });
+        ctx.globalAlpha = 1;
     }
 
     move(dx, dy) {
@@ -122,10 +175,7 @@ function drawBoard() {
     board.forEach((row, y) => {
         row.forEach((value, x) => {
             if (value) {
-                ctx.fillStyle = COLORS[value - 1];
-                ctx.fillRect(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
-                ctx.strokeStyle = 'white';
-                ctx.strokeRect(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+                drawBeveledBlock(ctx, x * BLOCK_SIZE, y * BLOCK_SIZE, COLORS[value - 1]);
             }
         });
     });
@@ -222,10 +272,7 @@ function drawNextPiece() {
     nextPiece.shape.forEach((row, y) => {
         row.forEach((value, x) => {
             if (value) {
-                nextPieceCtx.fillStyle = nextPiece.color;
-                nextPieceCtx.fillRect(offsetX + x * blockSize, offsetY + y * blockSize, blockSize, blockSize);
-                nextPieceCtx.strokeStyle = 'white';
-                nextPieceCtx.strokeRect(offsetX + x * blockSize, offsetY + y * blockSize, blockSize, blockSize);
+                drawBeveledBlock(nextPieceCtx, offsetX + x * blockSize, offsetY + y * blockSize, nextPiece.color, blockSize);
             }
         });
     });
