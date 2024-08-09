@@ -1,11 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tetris Game</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
+        <!-- Favicon for the website -->
+        <link rel="icon" type="image/webp" href="favicon.webp">
+        <!-- Web app manifest for PWA support -->
+        <link rel="manifest" href="manifest.json">
     <style>
         body {
             background-color: #000000;
@@ -13,19 +19,23 @@
             height: 100vh;
             overflow: hidden;
         }
+
         .game-container {
             display: flex;
             flex-direction: column;
             align-items: center;
             height: 100%;
         }
+
         #gameBoard {
             border: 2px solid #333;
             background-color: #000000;
         }
+
         #nextPiece {
             background-color: #000000;
         }
+
         .key {
             width: 40px;
             height: 40px;
@@ -36,6 +46,7 @@
             font-size: 20px;
             background-color: #111;
         }
+
         .key-space {
             width: 120px;
             height: 40px;
@@ -46,25 +57,134 @@
             font-size: 16px;
             background-color: #111;
         }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #1a1a1a;
+            padding: 20px;
+            border: 1px solid #444;
+            border-radius: 10px;
+            width: 95%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #fff;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .stat-item {
+            background-color: #2a2a2a;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-label {
+            font-weight: bold;
+        }
+
+        .stat-value {
+            font-size: 1.2em;
+            color: #4CAF50;
+        }
+
+        .how-to-play-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #2a2a2a;
+            border-radius: 8px;
+        }
+
+        .how-to-play-section h3 {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: #4CAF50;
+        }
+
+        .tetromino {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin: 2px;
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .control-item {
+            display: flex;
+            align-items: center;
+            background-color: #333;
+            padding: 8px;
+            border-radius: 5px;
+        }
+
+        .control-icon {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #4CAF50;
+            border-radius: 5px;
+        }
+
         @media (max-width: 767px) {
             body {
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
             }
+
             .game-container {
                 height: auto;
                 max-height: 100vh;
                 padding-top: 1rem;
                 padding-bottom: 1rem;
             }
+
             #gameBoard {
                 height: 70vh;
                 width: calc(70vh / 2);
             }
-            .controls, .desktop-only {
+
+            .controls,
+            .desktop-only {
                 display: none;
             }
+
             .game-info {
                 display: flex;
                 justify-content: space-between;
@@ -72,23 +192,44 @@
                 width: 100%;
                 margin-top: 1rem;
             }
-            .game-info > div {
+
+            .game-info>div {
                 width: 48%;
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
             }
+
             #nextPiece {
                 width: 80px;
                 height: 80px;
             }
+
             .next-piece-container {
                 display: flex;
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
             }
+
+            .button-container {
+                display: flex;
+                justify-content: space-between;
+                gap: 0.5rem;
+            }
+
+            .button-container button {
+                flex: 1;
+                font-size: 0.9rem;
+                padding: 0.5rem 0.25rem;
+            }
+
+            .modal-content {
+                margin: 5% auto;
+                padding: 15px;
+            }
         }
+
         @media (min-width: 768px) {
             .game-container {
                 flex-direction: row;
@@ -96,23 +237,34 @@
                 gap: 2rem;
                 height: 100vh;
             }
+
             #gameBoard {
                 height: 90vh;
                 width: calc(90vh / 2);
             }
+
             .game-info {
                 display: block;
             }
+
             .next-piece-container {
                 margin-top: 1rem;
             }
+
             #nextPiece {
                 width: 120px;
                 height: 120px;
             }
+
+            .button-container {
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+            }
         }
     </style>
 </head>
+
 <body class="p-4">
     <div class="text-center w-full h-full flex flex-col">
         <div class="game-container flex-grow">
@@ -121,6 +273,9 @@
                     <canvas id="gameBoard" width="300" height="600"></canvas>
                     <div id="gameOver" class="absolute inset-0 bg-black bg-opacity-75 flex items-center justify-center hidden">
                         <p class="text-white text-3xl font-bold">Game Over</p>
+                    </div>
+                    <div id="gamePaused" class="absolute inset-0 bg-black bg-opacity-75 flex items-center justify-center hidden">
+                        <p class="text-white text-3xl font-bold">Paused</p>
                     </div>
                 </div>
             </div>
@@ -136,9 +291,17 @@
                             <canvas id="nextPiece" width="120" height="120" class="border border-gray-700 mx-auto"></canvas>
                         </div>
                     </div>
-                    <button id="startButton" class="bg-gray-800 text-white hover:bg-gray-700 font-bold py-2 px-4 w-full text-lg transition duration-300">
-                        Start Game
-                    </button>
+                    <div class="button-container">
+                        <button id="startButton" class="bg-gray-800 text-white hover:bg-gray-700 font-bold py-2 px-4 w-full text-lg transition duration-300">
+                            Start Game
+                        </button>
+                        <button id="statsButton" class="bg-gray-800 text-white hover:bg-gray-700 font-bold py-2 px-4 w-full text-lg transition duration-300">
+                            Show Stats
+                        </button>
+                        <button id="howToPlayButton" class="bg-gray-800 text-white hover:bg-gray-700 font-bold py-2 px-4 w-full text-lg transition duration-300">
+                            How to Play
+                        </button>
+                    </div>
                     <div class="controls border border-gray-800 p-4">
                         <p class="text-xl mb-4">Controls:</p>
                         <div class="flex flex-col items-center mb-4">
@@ -163,7 +326,144 @@
                 </div>
             </div>
         </div>
-    </div>
-    <script src="tetris.js"></script>
-</body>
+
+        <div id="statsModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2 class="text-2xl font-bold mb-4 text-center">Game Statistics</h2>
+                <div id="statsContent"></div>
+            </div>
+        </div>
+
+        <div id="howToPlayModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2 class="text-2xl font-bold mb-4 text-center">How to Play Tetris</h2>
+                <div id="howToPlayContent">
+                    <div class="how-to-play-section">
+                        <h3>Game Objective</h3>
+                        <p>Tetris is a puzzle game where you arrange falling blocks (tetrominoes) to create complete horizontal lines. When a line is completed, it disappears, and you earn points. The game ends when the blocks stack up to the top of the playing field.</p>
+                    </div>
+
+                    <div class="how-to-play-section">
+                        <h3>Tetrominoes</h3>
+                        <p>There are seven different shapes of tetrominoes:</p>
+                        <div class="flex justify-around my-2">
+                            <div class="tetromino" style="background-color: cyan;"></div>
+                            <div class="tetromino" style="background-color: blue;"></div>
+                            <div class="tetromino" style="background-color: orange;"></div>
+                            <div class="tetromino" style="background-color: yellow;"></div>
+                            <div class="tetromino" style="background-color: green;"></div>
+                            <div class="tetromino" style="background-color: purple;"></div>
+                            <div class="tetromino" style="background-color: red;"></div>
+                        </div>
+                        <p>Each tetromino falls from the top of the screen. Your goal is to rotate and move these pieces to create solid lines.</p>
+                    </div>
+
+                    <div class="how-to-play-section">
+                        <h3>Scoring</h3>
+                        <p>You score points by completing lines. The more lines you clear at once, the more points you earn:</p>
+                        <ul class="list-disc list-inside">
+                            <li>1 line: 100 points</li>
+                            <li>2 lines: 300 points</li>
+                            <li>3 lines: 500 points</li>
+                            <li>4 lines (Tetris): 800 points</li>
+                        </ul>
+                    </div>
+
+                    <div class="how-to-play-section">
+                        <h3>Controls</h3>
+                        <div class="controls-grid">
+                            <div class="control-item">
+                                <div class="control-icon">←→</div>
+                                <span>Move Left/Right</span>
+                            </div>
+                            <div class="control-item">
+                                <div class="control-icon">↓</div>
+                                <span>Soft Drop</span>
+                            </div>
+                            <div class="control-item">
+                                <div class="control-icon">↑</div>
+                                <span>Rotate</span>
+                            </div>
+                            <div class="control-item">
+                                <div class="control-icon">Space</div>
+                                <span>Hard Drop</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="how-to-play-section">
+                        <h3>Mobile Controls</h3>
+                        <ul class="list-disc list-inside">
+                            <li>Swipe left or right to move the block</li>
+                            <li>Tap to rotate the block</li>
+                            <li>Swipe down to drop the block</li>
+                        </ul>
+                    </div>
+
+                    <div class="how-to-play-section">
+                        <h3>Tips</h3>
+                        <ul class="list-disc list-inside">
+                            <li>Plan ahead by looking at the "Next" piece</li>
+                            <li>Try to keep the stack as low as possible</li>
+                            <li>Practice using both rotation directions</li>
+                            <li>Learn to use the "T-spin" technique for advanced play</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="tetris.js"></script>
+        <script>
+            function displayStats() {
+                const stats = JSON.parse(localStorage.getItem('tetrisStats')) || {
+                    gamesPlayed: 0,
+                    highScore: 0,
+                    totalScore: 0,
+                    totalLinesCleared: 0,
+                    totalPiecesPlaced: 0,
+                    totalRotations: 0,
+                    totalHardDrops: 0,
+                    longestGame: 0
+                };
+
+                const statsContent = document.getElementById('statsContent');
+                statsContent.innerHTML = `
+                    <div class="stat-item"><span class="stat-label">Games Played:</span> <span class="stat-value">${stats.gamesPlayed}</span></div>
+                    <div class="stat-item"><span class="stat-label">High Score:</span> <span class="stat-value">${stats.highScore}</span></div>
+                    <div class="stat-item"><span class="stat-label">Total Score:</span> <span class="stat-value">${stats.totalScore}</span></div>
+                    <div class="stat-item"><span class="stat-label">Total Lines Cleared:</span> <span class="stat-value">${stats.totalLinesCleared}</span></div>
+                    <div class="stat-item"><span class="stat-label">Total Pieces Placed:</span> <span class="stat-value">${stats.totalPiecesPlaced}</span></div>
+                    <div class="stat-item"><span class="stat-label">Total Rotations:</span> <span class="stat-value">${stats.totalRotations}</span></div>
+                    <div class="stat-item"><span class="stat-label">Total Hard Drops:</span> <span class="stat-value">${stats.totalHardDrops}</span></div>
+                    <div class="stat-item"><span class="stat-label">Longest Game:</span> <span class="stat-value">${stats.longestGame} seconds</span></div>
+                `;
+                document.getElementById('statsModal').style.display = 'flex';
+            }
+
+            document.getElementById('statsButton').addEventListener('click', displayStats);
+            document.getElementById('howToPlayButton').addEventListener('click', () => {
+                document.getElementById('howToPlayModal').style.display = 'flex';
+            });
+
+            const closeButtons = document.querySelectorAll('.close');
+            closeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    button.closest('.modal').style.display = 'none';
+                });
+            });
+
+            // Close the modal when clicking outside of the modal-content
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                modal.addEventListener('click', (event) => {
+                    if (event.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+            });
+        </script>
+    </body>
 </html>

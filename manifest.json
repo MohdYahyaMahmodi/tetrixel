@@ -1,0 +1,19 @@
+{
+  "name": "Tetris Neocities",
+  "short_name": "Tetris",
+  "description": "The #1 Video Game on Neocities",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "favicon.webp",
+      "sizes": "512x512",
+      "type": "image/webp",
+      "purpose": "any maskable"
+    }
+  ],
+  "prefer_related_applications": false
+}

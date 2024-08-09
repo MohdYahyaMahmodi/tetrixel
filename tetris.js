@@ -3,9 +3,14 @@ const ctx = gameBoard.getContext('2d');
 const nextPieceCanvas = document.getElementById('nextPiece');
 const nextPieceCtx = nextPieceCanvas.getContext('2d');
 const startButton = document.getElementById('startButton');
+const statsButton = document.getElementById('statsButton');
 const scoreElement = document.getElementById('score');
 const levelElement = document.getElementById('level');
 const gameOverElement = document.getElementById('gameOver');
+const gamePausedElement = document.getElementById('gamePaused');
+const statsModal = document.getElementById('statsModal');
+const statsContent = document.getElementById('statsContent');
+const closeStatsButton = document.querySelector('.close');
 
 const ROWS = 20;
 const COLS = 10;
@@ -23,6 +28,19 @@ let dropCounter = 0;
 let dropInterval = 1000;
 let lastTime = 0;
 let isGameOver = false;
+let isPaused = false;
+let isGameStarted = false;
+
+let stats = {
+    gamesPlayed: 0,
+    highScore: 0,
+    totalScore: 0,
+    totalLinesCleared: 0,
+    totalPiecesPlaced: 0,
+    totalRotations: 0,
+    totalHardDrops: 0,
+    longestGame: 0
+};
 
 const SHAPES = [
     [[1, 1, 1, 1]],
@@ -33,6 +51,51 @@ const SHAPES = [
     [[1, 1, 1], [1, 0, 0]],
     [[1, 1, 1], [0, 0, 1]]
 ];
+
+function loadStats() {
+    const savedStats = localStorage.getItem('tetrisStats');
+    if (savedStats) {
+        stats = JSON.parse(savedStats);
+    }
+}
+
+function saveStats() {
+    localStorage.setItem('tetrisStats', JSON.stringify(stats));
+}
+
+function updateStats() {
+    stats.gamesPlayed++;
+    stats.totalScore += score;
+    if (score > stats.highScore) {
+        stats.highScore = score;
+    }
+    saveStats();
+}
+
+function displayStats() {
+    statsContent.innerHTML = `
+        <p>Games Played: ${stats.gamesPlayed}</p>
+        <p>High Score: ${stats.highScore}</p>
+        <p>Total Score: ${stats.totalScore}</p>
+        <p>Total Lines Cleared: ${stats.totalLinesCleared}</p>
+        <p>Total Pieces Placed: ${stats.totalPiecesPlaced}</p>
+        <p>Total Rotations: ${stats.totalRotations}</p>
+        <p>Total Hard Drops: ${stats.totalHardDrops}</p>
+        <p>Longest Game: ${stats.longestGame} seconds</p>
+    `;
+    statsModal.style.display = 'block';
+}
+
+statsButton.onclick = displayStats;
+closeStatsButton.onclick = () => {
+    statsModal.style.display = 'none';
+};
+
+window.onclick = (event) => {
+    if (event.target == statsModal) {
+        statsModal.style.display = 'none';
+    }
+};
 
 function drawBeveledBlock(ctx, x, y, color, size = BLOCK_SIZE) {
     const bevelSize = size === BLOCK_SIZE ? BEVEL_SIZE : Math.max(1, Math.floor(size / 10));
@@ -148,6 +211,8 @@ class Piece {
             this.shape = prevShape;
             return false;
         }
+        stats.totalRotations++;
+        saveStats();
         return true;
     }
 
@@ -206,6 +271,8 @@ function merge() {
             }
         });
     });
+    stats.totalPiecesPlaced++;
+    saveStats();
 }
 
 function clearLines() {
@@ -218,13 +285,35 @@ function clearLines() {
         }
     }
     if (linesCleared > 0) {
-        score += linesCleared * 100 * level;
+        stats.totalLinesCleared += linesCleared;
+        
+        // Updated scoring system
+        let points;
+        switch(linesCleared) {
+            case 1:
+                points = 100;
+                break;
+            case 2:
+                points = 300;
+                break;
+            case 3:
+                points = 500;
+                break;
+            case 4:
+                points = 800;
+                break;
+            default:
+                points = 0;
+        }
+        
+        score += points * level;
         scoreElement.textContent = score;
         if (score >= level * 1000) {
             level++;
             levelElement.textContent = level;
             dropInterval = Math.max(100, 1000 - (level - 1) * 100);
         }
+        saveStats();
     }
 }
 
@@ -232,9 +321,16 @@ function gameOver() {
     isGameOver = true;
     cancelAnimationFrame(gameLoop);
     gameOverElement.classList.remove('hidden');
+    startButton.textContent = 'Start Game';
+    isGameStarted = false;
+    updateStats();
 }
 
+let gameStartTime;
+
 function update(time = 0) {
+    if (isPaused) return;
+
     const deltaTime = time - lastTime;
     lastTime = time;
 
@@ -259,6 +355,12 @@ function update(time = 0) {
     drawBoard();
     currentPiece.drawGhost(ctx);
     currentPiece.draw(ctx);
+
+    const currentGameTime = Math.floor((Date.now() - gameStartTime) / 1000);
+    if (currentGameTime > stats.longestGame) {
+        stats.longestGame = currentGameTime;
+        saveStats();
+    }
 
     gameLoop = requestAnimationFrame(update);
 }
@@ -285,19 +387,40 @@ function startGame() {
     scoreElement.textContent = score;
     levelElement.textContent = level;
     gameOverElement.classList.add('hidden');
+    gamePausedElement.classList.add('hidden');
     dropCounter = 0;
     dropInterval = 1000;
     lastTime = 0;
     isGameOver = false;
+    isPaused = false;
+    isGameStarted = true;
     currentPiece = createPiece();
     nextPiece = createPiece();
     drawNextPiece();
     cancelAnimationFrame(gameLoop);
+    startButton.textContent = 'Pause';
+    gameStartTime = Date.now();
     update();
 }
 
-document.addEventListener('keydown', event => {
+function togglePause() {
     if (isGameOver) return;
+    
+    isPaused = !isPaused;
+    if (isPaused) {
+        cancelAnimationFrame(gameLoop);
+        gamePausedElement.classList.remove('hidden');
+        startButton.textContent = 'Resume';
+    } else {
+        gamePausedElement.classList.add('hidden');
+        startButton.textContent = 'Pause';
+        lastTime = performance.now();
+        gameLoop = requestAnimationFrame(update);
+    }
+}
+
+document.addEventListener('keydown', event => {
+    if (isGameOver || isPaused) return;
     switch (event.keyCode) {
         case 37: // Left arrow
             currentPiece.move(-1, 0);
@@ -332,20 +455,28 @@ document.addEventListener('keydown', event => {
                 gameOver();
             }
             dropCounter = 0;
+            stats.totalHardDrops++;
+            saveStats();
             break;
     }
 });
 
-startButton.addEventListener('click', startGame);
+startButton.addEventListener('click', () => {
+    if (!isGameStarted) {
+        startGame();
+    } else {
+        togglePause();
+    }
+});
 
 // Touch controls using Hammer.js
 const hammer = new Hammer(gameBoard);
 hammer.get('swipe').set({ direction: Hammer.DIRECTION_ALL });
 
-hammer.on('swipeleft', () => { if (!isGameOver) currentPiece.move(-1, 0); });
-hammer.on('swiperight', () => { if (!isGameOver) currentPiece.move(1, 0); });
+hammer.on('swipeleft', () => { if (!isGameOver && !isPaused) currentPiece.move(-1, 0); });
+hammer.on('swiperight', () => { if (!isGameOver && !isPaused) currentPiece.move(1, 0); });
 hammer.on('swipedown', () => {
-    if (isGameOver) return;
+    if (isGameOver || isPaused) return;
     while (currentPiece.move(0, 1)) {}
     merge();
     clearLines();
@@ -356,8 +487,11 @@ hammer.on('swipedown', () => {
         gameOver();
     }
     dropCounter = 0;
+    stats.totalHardDrops++;
+    saveStats();
 });
-hammer.on('tap', () => { if (!isGameOver) currentPiece.rotate(); });
+hammer.on('tap', () => { if (!isGameOver && !isPaused) currentPiece.rotate(); });
 
 // Initial setup
+loadStats();
 drawGrid();
