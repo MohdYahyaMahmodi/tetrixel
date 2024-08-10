@@ -532,6 +532,17 @@ window.addEventListener("gamepaddisconnected", function(e) {
     e.gamepad.index, e.gamepad.id);
 });
 
+const gamepadButtonCooldowns = {
+    12: 0, // Up
+    13: 0, // Down
+    14: 0, // Left
+    15: 0, // Right
+    0: 0,  // A button
+    9: 0   // Start button
+};
+
+const GAMEPAD_COOLDOWN = 150; // Increased cooldown time in milliseconds
+
 function handleGamepadInput() {
     const gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads() : []);
     if (!gamepads) {
@@ -541,21 +552,16 @@ function handleGamepadInput() {
     const gamepad = gamepads[0]; // We'll just use the first gamepad
     if (gamepad) {
         const currentTime = performance.now();
-        if (currentTime - lastGamepadActionTime < gamepadCooldown) {
-            return; // Exit if we're still in the cooldown period
-        }
 
-        let actionPerformed = false;
-
-        if (gamepad.buttons[14].pressed) { // Left D-pad
+        if (gamepad.buttons[14].pressed && currentTime - gamepadButtonCooldowns[14] > GAMEPAD_COOLDOWN) { // Left D-pad
             currentPiece.move(-1, 0);
-            actionPerformed = true;
+            gamepadButtonCooldowns[14] = currentTime;
         }
-        if (gamepad.buttons[15].pressed) { // Right D-pad
+        if (gamepad.buttons[15].pressed && currentTime - gamepadButtonCooldowns[15] > GAMEPAD_COOLDOWN) { // Right D-pad
             currentPiece.move(1, 0);
-            actionPerformed = true;
+            gamepadButtonCooldowns[15] = currentTime;
         }
-        if (gamepad.buttons[13].pressed) { // Down D-pad
+        if (gamepad.buttons[13].pressed && currentTime - gamepadButtonCooldowns[13] > GAMEPAD_COOLDOWN) { // Down D-pad
             if (!currentPiece.move(0, 1)) {
                 merge();
                 clearLines();
@@ -567,13 +573,13 @@ function handleGamepadInput() {
                 }
             }
             dropCounter = 0;
-            actionPerformed = true;
+            gamepadButtonCooldowns[13] = currentTime;
         }
-        if (gamepad.buttons[12].pressed) { // Up D-pad
+        if (gamepad.buttons[12].pressed && currentTime - gamepadButtonCooldowns[12] > GAMEPAD_COOLDOWN) { // Up D-pad
             currentPiece.rotate();
-            actionPerformed = true;
+            gamepadButtonCooldowns[12] = currentTime;
         }
-        if (gamepad.buttons[0].pressed) { // A button (Xbox) / X button (PlayStation)
+        if (gamepad.buttons[0].pressed && currentTime - gamepadButtonCooldowns[0] > GAMEPAD_COOLDOWN) { // A button (Xbox) / X button (PlayStation)
             while (currentPiece.move(0, 1)) {}
             merge();
             clearLines();
@@ -586,19 +592,15 @@ function handleGamepadInput() {
             dropCounter = 0;
             stats.totalHardDrops++;
             saveStats();
-            actionPerformed = true;
+            gamepadButtonCooldowns[0] = currentTime;
         }
-        if (gamepad.buttons[9].pressed) { // Start button
+        if (gamepad.buttons[9].pressed && currentTime - gamepadButtonCooldowns[9] > GAMEPAD_COOLDOWN) { // Start button
             if (!isGameStarted) {
                 startGame();
             } else {
                 togglePause();
             }
-            actionPerformed = true;
-        }
-
-        if (actionPerformed) {
-            lastGamepadActionTime = currentTime;
+            gamepadButtonCooldowns[9] = currentTime;
         }
     }
 }
