@@ -17,21 +17,22 @@ const COLS = 10;
 const BLOCK_SIZE = 30;
 const BEVEL_SIZE = 3;
 const COLORS = [
-  '#00FFFF',  // Cyan
-  '#FF00FF',  // Magenta
-  '#FFFF00',  // Yellow
-  '#FF4500',  // OrangeRed
-  '#32CD32',  // LimeGreen
-  '#1E90FF',  // DodgerBlue
-  '#FF1493',  // DeepPink
-  '#00FA9A',  // MediumSpringGreen
-  '#FF69B4',  // HotPink
-  '#4169E1',  // RoyalBlue
-  '#00CED1',  // DarkTurquoise
-  '#FF8C00',  // DarkOrange
-  '#7B68EE',  // MediumSlateBlue
-  '#20B2AA'   // LightSeaGreen
+    '#00FFFF',  // Cyan (I Tetromino)
+    '#0000FF',  // Blue (J Tetromino)
+    '#FFA500',  // Orange (L Tetromino)
+    '#FFFF00',  // Yellow (O Tetromino)
+    '#00FF00',  // Green (S Tetromino)
+    '#800080',  // Purple (T Tetromino)
+    '#FF0000',  // Red (Z Tetromino)
+    '#FF69B4',  // Hot Pink (New Color)
+    '#FFD700',  // Gold (New Color)
+    '#1E90FF',  // Dodger Blue (New Color)
+    '#ADFF2F',  // GreenYellow (New Color)
+    '#FF4500',  // OrangeRed (New Color)
+    '#DA70D6'   // Orchid (New Color)
 ];
+
+  
 
 let board = Array(ROWS).fill().map(() => Array(COLS).fill(0));
 let score = 0;
@@ -58,14 +59,26 @@ let stats = {
 };
 
 const SHAPES = [
-    [[1, 1, 1, 1]],
-    [[1, 1], [1, 1]],
-    [[1, 1, 1], [0, 1, 0]],
-    [[1, 1, 0], [0, 1, 1]],
-    [[0, 1, 1], [1, 1, 0]],
-    [[1, 1, 1], [1, 0, 0]],
-    [[1, 1, 1], [0, 0, 1]]
+    // Original Tetris Shapes
+    [[1, 1, 1, 1]],       // I
+    [[1, 1], [1, 1]],     // O
+    [[1, 1, 1], [0, 1, 0]], // T
+    [[1, 1, 0], [0, 1, 1]], // S
+    [[0, 1, 1], [1, 1, 0]], // Z
+    [[1, 1, 1], [1, 0, 0]], // L
+    [[1, 1, 1], [0, 0, 1]], // J
+
+    // Custom Unique Shapes
+    [[1, 0], [1, 1], [0, 1]], // Small Plus Shape
+    [[1, 1, 1], [1, 0, 0]],   // Skewed T-Shape
+    [[1, 0], [1, 1], [1, 0]], // T-Shape with a Vertical Line
+    [[1, 1, 1], [1, 1, 0]],   // Extended L Shape
+    [[1, 1], [1, 0], [1, 1]], // U Shape
+    [[0, 1, 0], [1, 1, 1], [0, 1, 0]], // Cross Shape
+    [[1, 0, 1], [1, 1, 1]],   // Arrow Shape
+    [[1, 1], [1, 0], [1, 0]], // Hook Shape
 ];
+
 
 function loadStats() {
     const savedStats = localStorage.getItem('tetrisStats');
