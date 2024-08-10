@@ -88,16 +88,15 @@ function updateStats() {
 }
 
 function displayStats() {
-    statsContent.innerHTML = `
-        <p>Games Played: ${stats.gamesPlayed}</p>
+    statsContent.innerHTML = 
+        `<p>Games Played: ${stats.gamesPlayed}</p>
         <p>High Score: ${stats.highScore}</p>
         <p>Total Score: ${stats.totalScore}</p>
         <p>Total Lines Cleared: ${stats.totalLinesCleared}</p>
         <p>Total Pieces Placed: ${stats.totalPiecesPlaced}</p>
         <p>Total Rotations: ${stats.totalRotations}</p>
         <p>Total Hard Drops: ${stats.totalHardDrops}</p>
-        <p>Longest Game: ${stats.longestGame} seconds</p>
-    `;
+        <p>Longest Game: ${stats.longestGame} seconds</p>`;
     statsModal.style.display = 'block';
 }
 
@@ -476,9 +475,64 @@ document.addEventListener('keydown', event => {
     }
 });
 
+function handleGamepadInput() {
+    const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+    if (!gamepads) return;
+
+    for (const gamepad of gamepads) {
+        if (!gamepad) continue;
+
+        // Handle gamepad inputs
+        const { buttons, axes } = gamepad;
+        if (buttons[14].pressed) { // D-pad Left
+            currentPiece.move(-1, 0);
+        }
+        if (buttons[15].pressed) { // D-pad Right
+            currentPiece.move(1, 0);
+        }
+        if (buttons[13].pressed) { // D-pad Down
+            if (!currentPiece.move(0, 1)) {
+                merge();
+                clearLines();
+                currentPiece = nextPiece;
+                nextPiece = createPiece();
+                drawNextPiece();
+                if (currentPiece.collision()) {
+                    gameOver();
+                }
+            }
+            dropCounter = 0;
+        }
+        if (buttons[12].pressed) { // D-pad Up (Rotate)
+            currentPiece.rotate();
+        }
+        if (buttons[0].pressed || buttons[2].pressed) { // 'A' or 'X' button (Hard Drop)
+            while (currentPiece.move(0, 1)) {}
+            merge();
+            clearLines();
+            currentPiece = nextPiece;
+            nextPiece = createPiece();
+            drawNextPiece();
+            if (currentPiece.collision()) {
+                gameOver();
+            }
+            dropCounter = 0;
+            stats.totalHardDrops++;
+            saveStats();
+        }
+    }
+}
+
+function gameLoopWithGamepad(time) {
+    handleGamepadInput();
+    update(time);
+    requestAnimationFrame(gameLoopWithGamepad);
+}
+
 startButton.addEventListener('click', () => {
     if (!isGameStarted) {
         startGame();
+        requestAnimationFrame(gameLoopWithGamepad);
     } else {
         togglePause();
     }
