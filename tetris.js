@@ -296,12 +296,15 @@ function clearLines() {
     let linesCleared = 0;
     for (let y = ROWS - 1; y >= 0; y--) {
         if (board[y].every(value => value !== 0)) {
+            console.log(`Line ${y} is full and will be cleared.`);
             board.splice(y, 1);
             board.unshift(Array(COLS).fill(0));
             linesCleared++;
+            y++; // Check the same row again as it's now a new line
         }
     }
     if (linesCleared > 0) {
+        console.log(`Cleared ${linesCleared} lines in total.`);
         stats.totalLinesCleared += linesCleared;
         
         // Updated scoring system
@@ -324,9 +327,11 @@ function clearLines() {
         }
         
         score += points * level;
+        console.log(`Added ${points * level} points to the score.`);
         scoreElement.textContent = score;
         if (score >= level * 1000) {
             level++;
+            console.log(`Level increased to ${level}.`);
             levelElement.textContent = level;
             dropInterval = Math.max(100, 1000 - (level - 1) * 100);
         }
@@ -341,6 +346,7 @@ function gameOver() {
     startButton.textContent = 'Start Game';
     isGameStarted = false;
     updateStats();
+    console.log('Game Over!');
 }
 
 let gameStartTime;
@@ -420,6 +426,7 @@ function startGame() {
     startButton.textContent = 'Pause';
     gameStartTime = Date.now();
     update();
+    console.log('Game started!');
 }
 
 function togglePause() {
@@ -430,11 +437,13 @@ function togglePause() {
         cancelAnimationFrame(gameLoop);
         gamePausedElement.classList.remove('hidden');
         startButton.textContent = 'Resume';
+        console.log('Game paused');
     } else {
         gamePausedElement.classList.add('hidden');
         startButton.textContent = 'Pause';
         lastTime = performance.now();
         gameLoop = requestAnimationFrame(update);
+        console.log('Game resumed');
     }
 }
 
@@ -597,3 +606,4 @@ function handleGamepadInput() {
 // Initial setup
 loadStats();
 drawGrid();
+console.log('Tetris game initialized and ready to start!');
