@@ -433,6 +433,10 @@ function togglePause() {
     }
 }
 
+// Controller input cooldowns
+let lastGamepadInputTime = 0;
+const gamepadCooldown = 100; // 100ms cooldown between gamepad inputs
+
 document.addEventListener('keydown', event => {
     if (isGameOver || isPaused) return;
     switch (event.keyCode) {
@@ -479,6 +483,9 @@ function handleGamepadInput() {
     const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
     if (!gamepads) return;
 
+    const currentTime = performance.now();
+    if (currentTime - lastGamepadInputTime < gamepadCooldown) return;
+
     for (const gamepad of gamepads) {
         if (!gamepad) continue;
 
@@ -486,9 +493,11 @@ function handleGamepadInput() {
         const { buttons, axes } = gamepad;
         if (buttons[14].pressed) { // D-pad Left
             currentPiece.move(-1, 0);
+            lastGamepadInputTime = currentTime;
         }
         if (buttons[15].pressed) { // D-pad Right
             currentPiece.move(1, 0);
+            lastGamepadInputTime = currentTime;
         }
         if (buttons[13].pressed) { // D-pad Down
             if (!currentPiece.move(0, 1)) {
@@ -502,9 +511,11 @@ function handleGamepadInput() {
                 }
             }
             dropCounter = 0;
+            lastGamepadInputTime = currentTime;
         }
         if (buttons[12].pressed) { // D-pad Up (Rotate)
             currentPiece.rotate();
+            lastGamepadInputTime = currentTime;
         }
         if (buttons[0].pressed || buttons[2].pressed) { // 'A' or 'X' button (Hard Drop)
             while (currentPiece.move(0, 1)) {}
@@ -519,6 +530,7 @@ function handleGamepadInput() {
             dropCounter = 0;
             stats.totalHardDrops++;
             saveStats();
+            lastGamepadInputTime = currentTime;
         }
     }
 }
