@@ -2,7 +2,6 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PWA: Ready](https://img.shields.io/badge/PWA-Ready-blue.svg)](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps)
-[![GitHub stars](https://img.shields.io/github/stars/MohdYahyaMahmodi/tetrixel.svg)](https://github.com/MohdYahyaMahmodi/tetrixel/stargazers)
 
 Tetrixel is a modern, pixel-perfect implementation of the classic Tetris game, built as a Progressive Web App (PWA) using vanilla JavaScript, HTML5, and CSS3. It offers a seamless gaming experience across desktop and mobile devices, with a focus on smooth performance and engaging gameplay.
 
