@@ -29,9 +29,15 @@ Experience Tetrixel now: [Play Tetrixel](https://mohdyahyamahmodi.github.io/tetr
 
 Tetrixel is designed to provide a consistent and enjoyable experience across all devices. The game adapts its interface and controls to suit both desktop and mobile environments.
 
-<div style="display: flex; justify-content: space-around; flex-wrap: wrap;">
-  <img src="desktop-gameplay.png" alt="Desktop Gameplay" width="400"/>
-  <img src="mobile.png" alt="Mobile Gameplay" width="200"/>
+<div style="display: flex; justify-content: space-around; flex-wrap: wrap; align-items: flex-start;">
+  <div style="text-align: center; margin: 10px;">
+    <img src="desktop-gameplay.png" alt="Desktop Gameplay" width="400"/>
+    <p><strong>Large Screens: Desktop Gameplay</strong></p>
+  </div>
+  <div style="text-align: center; margin: 10px;">
+    <img src="mobile.png" alt="Mobile Gameplay" width="200"/>
+    <p><strong>Mobile: Touch-Optimized Interface</strong></p>
+  </div>
 </div>
 
 ### Desktop Experience
