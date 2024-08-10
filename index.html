@@ -349,46 +349,90 @@ html, body {
             <div class="modal-content">
                 <span class="close">&times;</span>
                 <h2 class="text-2xl font-bold mb-4 text-center">How to Play Tetrixel</h2>
-                <div id="howToPlayContent">
+                <div id="howToPlayContent" class="text-left">
                     <div class="how-to-play-section">
-                        <h3>Game Objective</h3>
+                        <h3 class="text-xl font-bold mb-2">Game Objective</h3>
                         <p>Tetrixel is a puzzle game where you arrange falling blocks (tetrominoes) to create complete horizontal lines. When a line is completed, it disappears, and you earn points. The game ends when the blocks stack up to the top of the playing field.</p>
                     </div>
         
                     <div class="how-to-play-section">
-                        <h3>Tetrominoes</h3>
+                        <h3 class="text-xl font-bold mb-2">Tetrominoes</h3>
                         <p>There are seven different shapes of tetrominoes:</p>
-                        <div class="flex justify-around my-4">
-                            <div class="tetromino" style="background-color: #00FFFF; width: 80px; height: 20px;"></div>
-                            <div class="tetromino" style="background-color: #FF00FF; width: 40px; height: 40px;"></div>
-                            <div class="tetromino" style="position: relative; width: 60px; height: 40px;">
-                                <div style="position: absolute; top: 0; left: 0; right: 0; height: 20px; background-color: #FFFF00;"></div>
-                                <div style="position: absolute; top: 20px; left: 20px; width: 20px; height: 20px; background-color: #FFFF00;"></div>
+                        <div class="flex justify-between items-center my-4" style="max-width: 100%; overflow-x: auto;">
+                            <div class="tetromino-container" style="width: 60px; height: 60px; margin: 0 5px;">
+                                <div class="tetromino" style="display: grid; grid-template-rows: repeat(4, 1fr); gap: 1px; height: 100%;">
+                                    <div style="background-color: #00FFFF; aspect-ratio: 1;"></div>
+                                    <div style="background-color: #00FFFF; aspect-ratio: 1;"></div>
+                                    <div style="background-color: #00FFFF; aspect-ratio: 1;"></div>
+                                    <div style="background-color: #00FFFF; aspect-ratio: 1;"></div>
+                                </div>
                             </div>
-                            <div class="tetromino" style="position: relative; width: 60px; height: 40px;">
-                                <div style="position: absolute; top: 0; right: 0; width: 40px; height: 20px; background-color: #FF4500;"></div>
-                                <div style="position: absolute; bottom: 0; left: 0; width: 40px; height: 20px; background-color: #FF4500;"></div>
+                            <div class="tetromino-container" style="width: 60px; height: 60px; margin: 0 5px;">
+                                <div class="tetromino" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px;">
+                                    <div style="background-color: #FF00FF; aspect-ratio: 1;"></div>
+                                    <div style="background-color: #FF00FF; aspect-ratio: 1;"></div>
+                                    <div style="background-color: #FF00FF; aspect-ratio: 1;"></div>
+                                    <div style="background-color: #FF00FF; aspect-ratio: 1;"></div>
+                                </div>
                             </div>
-                            <div class="tetromino" style="position: relative; width: 60px; height: 40px;">
-                                <div style="position: absolute; top: 0; left: 0; width: 40px; height: 20px; background-color: #32CD32;"></div>
-                                <div style="position: absolute; bottom: 0; right: 0; width: 40px; height: 20px; background-color: #32CD32;"></div>
+                            <div class="tetromino-container" style="width: 60px; height: 60px; margin: 0 5px;">
+                                <div class="tetromino" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;">
+                                    <div style="background-color: #FFFF00; aspect-ratio: 1;"></div>
+                                    <div style="background-color: #FFFF00; aspect-ratio: 1;"></div>
+                                    <div style="background-color: #FFFF00; aspect-ratio: 1;"></div>
+                                    <div></div>
+                                    <div style="background-color: #FFFF00; aspect-ratio: 1;"></div>
+                                    <div></div>
+                                </div>
                             </div>
-                            <div class="tetromino" style="position: relative; width: 60px; height: 40px;">
-                                <div style="position: absolute; top: 0; left: 0; right: 0; height: 20px; background-color: #1E90FF;"></div>
-                                <div style="position: absolute; bottom: 0; left: 0; width: 20px; height: 20px; background-color: #1E90FF;"></div>
+                            <div class="tetromino-container" style="width: 60px; height: 60px; margin: 0 5px;">
+                                <div class="tetromino" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;">
+                                    <div></div>
+                                    <div style="background-color: #FF4500; aspect-ratio: 1;"></div>
+                                    <div style="background-color: #FF4500; aspect-ratio: 1;"></div>
+                                    <div style="background-color: #FF4500; aspect-ratio: 1;"></div>
+                                    <div style="background-color: #FF4500; aspect-ratio: 1;"></div>
+                                    <div></div>
+                                </div>
                             </div>
-                            <div class="tetromino" style="position: relative; width: 60px; height: 40px;">
-                                <div style="position: absolute; top: 0; left: 0; right: 0; height: 20px; background-color: #FF1493;"></div>
-                                <div style="position: absolute; bottom: 0; right: 0; width: 20px; height: 20px; background-color: #FF1493;"></div>
+                            <div class="tetromino-container" style="width: 60px; height: 60px; margin: 0 5px;">
+                                <div class="tetromino" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;">
+                                    <div style="background-color: #32CD32; aspect-ratio: 1;"></div>
+                                    <div style="background-color: #32CD32; aspect-ratio: 1;"></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div style="background-color: #32CD32; aspect-ratio: 1;"></div>
+                                    <div style="background-color: #32CD32; aspect-ratio: 1;"></div>
+                                </div>
+                            </div>
+                            <div class="tetromino-container" style="width: 60px; height: 60px; margin: 0 5px;">
+                                <div class="tetromino" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;">
+                                    <div style="background-color: #1E90FF; aspect-ratio: 1;"></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div style="background-color: #1E90FF; aspect-ratio: 1;"></div>
+                                    <div style="background-color: #1E90FF; aspect-ratio: 1;"></div>
+                                    <div style="background-color: #1E90FF; aspect-ratio: 1;"></div>
+                                </div>
+                            </div>
+                            <div class="tetromino-container" style="width: 60px; height: 60px; margin: 0 5px;">
+                                <div class="tetromino" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;">
+                                    <div></div>
+                                    <div></div>
+                                    <div style="background-color: #FF1493; aspect-ratio: 1;"></div>
+                                    <div style="background-color: #FF1493; aspect-ratio: 1;"></div>
+                                    <div style="background-color: #FF1493; aspect-ratio: 1;"></div>
+                                    <div style="background-color: #FF1493; aspect-ratio: 1;"></div>
+                                </div>
                             </div>
                         </div>
                         <p>Each tetromino falls from the top of the screen. Your goal is to rotate and move these pieces to create solid lines.</p>
                     </div>
         
                     <div class="how-to-play-section">
-                        <h3>Scoring</h3>
+                        <h3 class="text-xl font-bold mb-2">Scoring</h3>
                         <p>You score points by completing lines. The more lines you clear at once, the more points you earn:</p>
-                        <ul class="list-disc list-inside">
+                        <ul class="list-disc list-inside ml-4">
                             <li>1 line: 100 points</li>
                             <li>2 lines: 300 points</li>
                             <li>3 lines: 500 points</li>
@@ -397,7 +441,7 @@ html, body {
                     </div>
         
                     <div class="how-to-play-section">
-                        <h3>Controls</h3>
+                        <h3 class="text-xl font-bold mb-2">Controls</h3>
                         <div class="controls-grid">
                             <div class="control-item">
                                 <div class="control-icon">←→</div>
@@ -419,8 +463,8 @@ html, body {
                     </div>
         
                     <div class="how-to-play-section">
-                        <h3>Mobile Controls</h3>
-                        <ul class="list-disc list-inside">
+                        <h3 class="text-xl font-bold mb-2">Mobile Controls</h3>
+                        <ul class="list-disc list-inside ml-4">
                             <li>Swipe left or right to move the block</li>
                             <li>Tap to rotate the block</li>
                             <li>Swipe down to drop the block</li>
@@ -428,21 +472,22 @@ html, body {
                     </div>
         
                     <div class="how-to-play-section">
-                        <h3>Controller Support</h3>
+                        <h3 class="text-xl font-bold mb-2">Controller Support</h3>
                         <p>Play Tetrixel using a game controller! The following controls are supported:</p>
-                        <ul class="list-disc list-inside">
-                            <li><strong>Left Stick/D-pad Left/Right:</strong> Move piece left/right</li>
+                        <ul class="list-disc list-inside ml-4">
+                            <li><strong>D-pad Left/Right:</strong> Move piece left/right</li>
                             <li><strong>D-pad Down:</strong> Soft drop</li>
                             <li><strong>D-pad Up:</strong> Rotate piece</li>
                             <li><strong>A Button (Xbox) / X Button (PlayStation):</strong> Hard drop</li>
                             <li><strong>Start Button:</strong> Start game / Pause / Resume</li>
                         </ul>
-                        <p>Compatible with Xbox, PlayStation, and other generic controllers that follow the standard gamepad layout.</p>
+                        <p class="mt-2">Compatible with Xbox, PlayStation, and other generic controllers that follow the standard gamepad layout.</p>
+                        <p class="mt-2"><em>Note: Controller input has a slight delay to prevent overly rapid movements.</em></p>
                     </div>
         
                     <div class="how-to-play-section">
-                        <h3>Tips</h3>
-                        <ul class="list-disc list-inside">
+                        <h3 class="text-xl font-bold mb-2">Tips</h3>
+                        <ul class="list-disc list-inside ml-4">
                             <li>Plan ahead by looking at the "Next" piece</li>
                             <li>Try to keep the stack as low as possible</li>
                             <li>Practice using both rotation directions</li>
