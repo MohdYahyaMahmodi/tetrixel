@@ -162,17 +162,19 @@ html, body {
             background-color: #333;
             padding: 8px;
             border-radius: 5px;
+            min-height: 50px; /* Ensure minimum height for all items */
         }
 
         .control-icon {
-            width: 30px;
-            height: 30px;
+            width: 40px; /* Increased width */
+            height: 40px; /* Increased height */
             margin-right: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             background-color: #4CAF50;
             border-radius: 5px;
+            font-size: 0.8rem; /* Reduced font size for "Space" */
         }
 
         @media (max-width: 767px) {
@@ -354,19 +356,34 @@ html, body {
                     </div>
 
                     <div class="how-to-play-section">
-                        <h3>Tetrominoes</h3>
-                        <p>There are seven different shapes of tetrominoes:</p>
-                        <div class="flex justify-around my-2">
-                            <div class="tetromino" style="background-color: cyan;"></div>
-                            <div class="tetromino" style="background-color: blue;"></div>
-                            <div class="tetromino" style="background-color: orange;"></div>
-                            <div class="tetromino" style="background-color: yellow;"></div>
-                            <div class="tetromino" style="background-color: green;"></div>
-                            <div class="tetromino" style="background-color: purple;"></div>
-                            <div class="tetromino" style="background-color: red;"></div>
-                        </div>
-                        <p>Each tetromino falls from the top of the screen. Your goal is to rotate and move these pieces to create solid lines.</p>
-                    </div>
+                      <h3>Tetrominoes</h3>
+                      <p>There are seven different shapes of tetrominoes:</p>
+                      <div class="flex justify-around my-4">
+                          <div class="tetromino" style="background-color: #00FFFF; width: 80px; height: 20px;"></div>
+                          <div class="tetromino" style="background-color: #FF00FF; width: 40px; height: 40px;"></div>
+                          <div class="tetromino" style="position: relative; width: 60px; height: 40px;">
+                              <div style="position: absolute; top: 0; left: 0; right: 0; height: 20px; background-color: #FFFF00;"></div>
+                              <div style="position: absolute; top: 20px; left: 20px; width: 20px; height: 20px; background-color: #FFFF00;"></div>
+                          </div>
+                          <div class="tetromino" style="position: relative; width: 60px; height: 40px;">
+                              <div style="position: absolute; top: 0; right: 0; width: 40px; height: 20px; background-color: #FF4500;"></div>
+                              <div style="position: absolute; bottom: 0; left: 0; width: 40px; height: 20px; background-color: #FF4500;"></div>
+                          </div>
+                          <div class="tetromino" style="position: relative; width: 60px; height: 40px;">
+                              <div style="position: absolute; top: 0; left: 0; width: 40px; height: 20px; background-color: #32CD32;"></div>
+                              <div style="position: absolute; bottom: 0; right: 0; width: 40px; height: 20px; background-color: #32CD32;"></div>
+                          </div>
+                          <div class="tetromino" style="position: relative; width: 60px; height: 40px;">
+                              <div style="position: absolute; top: 0; left: 0; right: 0; height: 20px; background-color: #1E90FF;"></div>
+                              <div style="position: absolute; bottom: 0; left: 0; width: 20px; height: 20px; background-color: #1E90FF;"></div>
+                          </div>
+                          <div class="tetromino" style="position: relative; width: 60px; height: 40px;">
+                              <div style="position: absolute; top: 0; left: 0; right: 0; height: 20px; background-color: #FF1493;"></div>
+                              <div style="position: absolute; bottom: 0; right: 0; width: 20px; height: 20px; background-color: #FF1493;"></div>
+                          </div>
+                      </div>
+                      <p>Each tetromino falls from the top of the screen. Your goal is to rotate and move these pieces to create solid lines.</p>
+                  </div>
 
                     <div class="how-to-play-section">
                         <h3>Scoring</h3>
