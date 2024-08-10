@@ -17,22 +17,21 @@ const COLS = 10;
 const BLOCK_SIZE = 30;
 const BEVEL_SIZE = 3;
 const COLORS = [
-    '#00FFFF',  // Cyan (I Tetromino)
-    '#0000FF',  // Blue (J Tetromino)
-    '#FFA500',  // Orange (L Tetromino)
-    '#FFFF00',  // Yellow (O Tetromino)
-    '#00FF00',  // Green (S Tetromino)
-    '#800080',  // Purple (T Tetromino)
-    '#FF0000',  // Red (Z Tetromino)
-    '#FF69B4',  // Hot Pink (New Color)
-    '#FFD700',  // Gold (New Color)
-    '#1E90FF',  // Dodger Blue (New Color)
-    '#ADFF2F',  // GreenYellow (New Color)
-    '#FF4500',  // OrangeRed (New Color)
-    '#DA70D6'   // Orchid (New Color)
+  '#00FFFF',  // Cyan
+  '#FF00FF',  // Magenta
+  '#FFFF00',  // Yellow
+  '#FF4500',  // OrangeRed
+  '#32CD32',  // LimeGreen
+  '#1E90FF',  // DodgerBlue
+  '#FF1493',  // DeepPink
+  '#00FA9A',  // MediumSpringGreen
+  '#FF69B4',  // HotPink
+  '#4169E1',  // RoyalBlue
+  '#00CED1',  // DarkTurquoise
+  '#FF8C00',  // DarkOrange
+  '#7B68EE',  // MediumSlateBlue
+  '#20B2AA'   // LightSeaGreen
 ];
-
-  
 
 let board = Array(ROWS).fill().map(() => Array(COLS).fill(0));
 let score = 0;
@@ -59,26 +58,14 @@ let stats = {
 };
 
 const SHAPES = [
-    // Original Tetris Shapes
-    [[1, 1, 1, 1]],       // I
-    [[1, 1], [1, 1]],     // O
-    [[1, 1, 1], [0, 1, 0]], // T
-    [[1, 1, 0], [0, 1, 1]], // S
-    [[0, 1, 1], [1, 1, 0]], // Z
-    [[1, 1, 1], [1, 0, 0]], // L
-    [[1, 1, 1], [0, 0, 1]], // J
-
-    // Custom Unique Shapes
-    [[1, 0], [1, 1], [0, 1]], // Small Plus Shape
-    [[1, 1, 1], [1, 0, 0]],   // Skewed T-Shape
-    [[1, 0], [1, 1], [1, 0]], // T-Shape with a Vertical Line
-    [[1, 1, 1], [1, 1, 0]],   // Extended L Shape
-    [[1, 1], [1, 0], [1, 1]], // U Shape
-    [[0, 1, 0], [1, 1, 1], [0, 1, 0]], // Cross Shape
-    [[1, 0, 1], [1, 1, 1]],   // Arrow Shape
-    [[1, 1], [1, 0], [1, 0]], // Hook Shape
+    [[1, 1, 1, 1]],
+    [[1, 1], [1, 1]],
+    [[1, 1, 1], [0, 1, 0]],
+    [[1, 1, 0], [0, 1, 1]],
+    [[0, 1, 1], [1, 1, 0]],
+    [[1, 1, 1], [1, 0, 0]],
+    [[1, 1, 1], [0, 0, 1]]
 ];
-
 
 function loadStats() {
     const savedStats = localStorage.getItem('tetrisStats');
@@ -101,15 +88,16 @@ function updateStats() {
 }
 
 function displayStats() {
-    statsContent.innerHTML = 
-        `<p>Games Played: ${stats.gamesPlayed}</p>
+    statsContent.innerHTML = `
+        <p>Games Played: ${stats.gamesPlayed}</p>
         <p>High Score: ${stats.highScore}</p>
         <p>Total Score: ${stats.totalScore}</p>
         <p>Total Lines Cleared: ${stats.totalLinesCleared}</p>
         <p>Total Pieces Placed: ${stats.totalPiecesPlaced}</p>
         <p>Total Rotations: ${stats.totalRotations}</p>
         <p>Total Hard Drops: ${stats.totalHardDrops}</p>
-        <p>Longest Game: ${stats.longestGame} seconds</p>`;
+        <p>Longest Game: ${stats.longestGame} seconds</p>
+    `;
     statsModal.style.display = 'block';
 }
 
@@ -446,10 +434,6 @@ function togglePause() {
     }
 }
 
-// Controller input cooldowns
-let lastGamepadInputTime = 0;
-const gamepadCooldown = 100; // 100ms cooldown between gamepad inputs
-
 document.addEventListener('keydown', event => {
     if (isGameOver || isPaused) return;
     switch (event.keyCode) {
@@ -492,72 +476,9 @@ document.addEventListener('keydown', event => {
     }
 });
 
-function handleGamepadInput() {
-    const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
-    if (!gamepads) return;
-
-    const currentTime = performance.now();
-    if (currentTime - lastGamepadInputTime < gamepadCooldown) return;
-
-    for (const gamepad of gamepads) {
-        if (!gamepad) continue;
-
-        // Handle gamepad inputs
-        const { buttons, axes } = gamepad;
-        if (buttons[14].pressed) { // D-pad Left
-            currentPiece.move(-1, 0);
-            lastGamepadInputTime = currentTime;
-        }
-        if (buttons[15].pressed) { // D-pad Right
-            currentPiece.move(1, 0);
-            lastGamepadInputTime = currentTime;
-        }
-        if (buttons[13].pressed) { // D-pad Down
-            if (!currentPiece.move(0, 1)) {
-                merge();
-                clearLines();
-                currentPiece = nextPiece;
-                nextPiece = createPiece();
-                drawNextPiece();
-                if (currentPiece.collision()) {
-                    gameOver();
-                }
-            }
-            dropCounter = 0;
-            lastGamepadInputTime = currentTime;
-        }
-        if (buttons[12].pressed) { // D-pad Up (Rotate)
-            currentPiece.rotate();
-            lastGamepadInputTime = currentTime;
-        }
-        if (buttons[0].pressed || buttons[2].pressed) { // 'A' or 'X' button (Hard Drop)
-            while (currentPiece.move(0, 1)) {}
-            merge();
-            clearLines();
-            currentPiece = nextPiece;
-            nextPiece = createPiece();
-            drawNextPiece();
-            if (currentPiece.collision()) {
-                gameOver();
-            }
-            dropCounter = 0;
-            stats.totalHardDrops++;
-            saveStats();
-            lastGamepadInputTime = currentTime;
-        }
-    }
-}
-
-function gameLoopWithGamepad(time) {
-    handleGamepadInput();
-    update(time);
-    requestAnimationFrame(gameLoopWithGamepad);
-}
-
 startButton.addEventListener('click', () => {
     if (!isGameStarted) {
         startGame();
-        requestAnimationFrame(gameLoopWithGamepad);
     } else {
         togglePause();
     }
@@ -585,6 +506,112 @@ hammer.on('swipedown', () => {
     saveStats();
 });
 hammer.on('tap', () => { if (!isGameOver && !isPaused) currentPiece.rotate(); });
+
+// Game controller support
+window.addEventListener("gamepadconnected", function(e) {
+    console.log("Gamepad connected at index %d: %s. %d buttons, %d axes.",
+    e.gamepad.index, e.gamepad.id,
+    e.gamepad.buttons.length, e.gamepad.axes.length);
+});
+
+window.addEventListener("gamepaddisconnected", function(e) {
+    console.log("Gamepad disconnected from index %d: %s",
+    e.gamepad.index, e.gamepad.id);
+});
+
+function handleGamepadInput() {
+    const gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads() : []);
+    if (!gamepads) {
+        return;
+    }
+
+    const gamepad = gamepads[0]; // We'll just use the first gamepad
+    if (gamepad) {
+        if (gamepad.buttons[14].pressed) { // Left D-pad
+            currentPiece.move(-1, 0);
+        }
+        if (gamepad.buttons[15].pressed) { // Right D-pad
+            currentPiece.move(1, 0);
+        }
+        if (gamepad.buttons[13].pressed) { // Down D-pad
+            if (!currentPiece.move(0, 1)) {
+                merge();
+                clearLines();
+                currentPiece = nextPiece;
+                nextPiece = createPiece();
+                drawNextPiece();
+                if (currentPiece.collision()) {
+                    gameOver();
+                }
+            }
+            dropCounter = 0;
+        }
+        if (gamepad.buttons[12].pressed) { // Up D-pad
+            currentPiece.rotate();
+        }
+        if (gamepad.buttons[0].pressed) { // A button (Xbox) / X button (PlayStation)
+            while (currentPiece.move(0, 1)) {}
+            merge();
+            clearLines();
+            currentPiece = nextPiece;
+            nextPiece = createPiece();
+            drawNextPiece();
+            if (currentPiece.collision()) {
+                gameOver();
+            }
+            dropCounter = 0;
+            stats.totalHardDrops++;
+            saveStats();
+        }
+        if (gamepad.buttons[9].pressed) { // Start button
+            if (!isGameStarted) {
+                startGame();
+            } else {
+                togglePause();
+            }
+        }
+    }
+}
+
+// Modify the update function to include gamepad input handling
+function update(time = 0) {
+    if (isPaused) return;
+
+    const deltaTime = time - lastTime;
+    lastTime = time;
+
+    handleGamepadInput(); // Add this line to handle gamepad input
+
+    dropCounter += deltaTime;
+    if (dropCounter > dropInterval) {
+        if (!currentPiece.move(0, 1)) {
+            merge();
+            clearLines();
+            currentPiece = nextPiece;
+            nextPiece = createPiece();
+            drawNextPiece();
+            if (currentPiece.collision()) {
+                gameOver();
+                return;
+            }
+        }
+        dropCounter = 0;
+    }
+
+    ctx.clearRect(0, 0, gameBoard.width, gameBoard.height);
+    drawGrid();
+    drawBoard();
+    currentPiece.drawGhost(ctx);
+    currentPiece.draw(ctx);
+
+    const currentGameTime = Math.floor((Date.now() - gameStartTime) / 1000);
+    if (currentGameTime > stats.longestGame) {
+        stats.longestGame = currentGameTime;
+        saveStats();
+    }
+
+    gameLoop = requestAnimationFrame(update);
+}
 
 // Initial setup
 loadStats();
