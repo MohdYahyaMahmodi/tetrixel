@@ -45,6 +45,8 @@ let lastTime = 0;
 let isGameOver = false;
 let isPaused = false;
 let isGameStarted = false;
+let lastGamepadActionTime = 0;
+const gamepadCooldown = 100; // Cooldown in milliseconds
 
 let stats = {
     gamesPlayed: 0,
@@ -349,6 +351,8 @@ function update(time = 0) {
     const deltaTime = time - lastTime;
     lastTime = time;
 
+    handleGamepadInput();
+
     dropCounter += deltaTime;
     if (dropCounter > dropInterval) {
         if (!currentPiece.move(0, 1)) {
@@ -527,11 +531,20 @@ function handleGamepadInput() {
 
     const gamepad = gamepads[0]; // We'll just use the first gamepad
     if (gamepad) {
+        const currentTime = performance.now();
+        if (currentTime - lastGamepadActionTime < gamepadCooldown) {
+            return; // Exit if we're still in the cooldown period
+        }
+
+        let actionPerformed = false;
+
         if (gamepad.buttons[14].pressed) { // Left D-pad
             currentPiece.move(-1, 0);
+            actionPerformed = true;
         }
         if (gamepad.buttons[15].pressed) { // Right D-pad
             currentPiece.move(1, 0);
+            actionPerformed = true;
         }
         if (gamepad.buttons[13].pressed) { // Down D-pad
             if (!currentPiece.move(0, 1)) {
@@ -545,9 +558,11 @@ function handleGamepadInput() {
                 }
             }
             dropCounter = 0;
+            actionPerformed = true;
         }
         if (gamepad.buttons[12].pressed) { // Up D-pad
             currentPiece.rotate();
+            actionPerformed = true;
         }
         if (gamepad.buttons[0].pressed) { // A button (Xbox) / X button (PlayStation)
             while (currentPiece.move(0, 1)) {}
@@ -562,6 +577,7 @@ function handleGamepadInput() {
             dropCounter = 0;
             stats.totalHardDrops++;
             saveStats();
+            actionPerformed = true;
         }
         if (gamepad.buttons[9].pressed) { // Start button
             if (!isGameStarted) {
@@ -569,48 +585,13 @@ function handleGamepadInput() {
             } else {
                 togglePause();
             }
+            actionPerformed = true;
+        }
+
+        if (actionPerformed) {
+            lastGamepadActionTime = currentTime;
         }
     }
-}
-
-// Modify the update function to include gamepad input handling
-function update(time = 0) {
-    if (isPaused) return;
-
-    const deltaTime = time - lastTime;
-    lastTime = time;
-
-    handleGamepadInput(); // Add this line to handle gamepad input
-
-    dropCounter += deltaTime;
-    if (dropCounter > dropInterval) {
-        if (!currentPiece.move(0, 1)) {
-            merge();
-            clearLines();
-            currentPiece = nextPiece;
-            nextPiece = createPiece();
-            drawNextPiece();
-            if (currentPiece.collision()) {
-                gameOver();
-                return;
-            }
-        }
-        dropCounter = 0;
-    }
-
-    ctx.clearRect(0, 0, gameBoard.width, gameBoard.height);
-    drawGrid();
-    drawBoard();
-    currentPiece.drawGhost(ctx);
-    currentPiece.draw(ctx);
-
-    const currentGameTime = Math.floor((Date.now() - gameStartTime) / 1000);
-    if (currentGameTime > stats.longestGame) {
-        stats.longestGame = currentGameTime;
-        saveStats();
-    }
-
-    gameLoop = requestAnimationFrame(update);
 }
 
 // Initial setup
