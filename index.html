@@ -8,16 +8,19 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
-        <!-- Favicon for the website -->
-        <link rel="icon" type="image/webp" href="favicon.webp">
-        <!-- Web app manifest for PWA support -->
-        <link rel="manifest" href="manifest.json">
+    <!-- Favicon for the website -->
+    <link rel="icon" type="image/webp" href="favicon.webp">
+    <!-- Web app manifest for PWA support -->
+    <link rel="manifest" href="manifest.json">
     <style>
         body {
             background-color: #000000;
             color: #ffffff;
             height: 100vh;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .game-container {
@@ -25,6 +28,7 @@
             flex-direction: column;
             align-items: center;
             height: 100%;
+            max-height: 100vh;
         }
 
         #gameBoard {
@@ -162,22 +166,15 @@
         }
 
         @media (max-width: 767px) {
-            body {
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-            }
-
             .game-container {
                 height: auto;
-                max-height: 100vh;
-                padding-top: 1rem;
-                padding-bottom: 1rem;
+                padding-top: 0.5rem;
+                padding-bottom: 0.5rem;
             }
 
             #gameBoard {
-                height: 70vh;
-                width: calc(70vh / 2);
+                height: 65vh;
+                width: calc(65vh / 2);
             }
 
             .controls,
@@ -190,10 +187,10 @@
                 justify-content: space-between;
                 align-items: stretch;
                 width: 100%;
-                margin-top: 1rem;
+                margin-top: 0.5rem;
             }
 
-            .game-info>div {
+            .game-info > div {
                 width: 48%;
                 display: flex;
                 flex-direction: column;
@@ -201,8 +198,8 @@
             }
 
             #nextPiece {
-                width: 80px;
-                height: 80px;
+                width: 60px;
+                height: 60px;
             }
 
             .next-piece-container {
@@ -216,12 +213,13 @@
                 display: flex;
                 justify-content: space-between;
                 gap: 0.5rem;
+                margin-top: 0.5rem;
             }
 
             .button-container button {
                 flex: 1;
-                font-size: 0.9rem;
-                padding: 0.5rem 0.25rem;
+                font-size: 0.8rem;
+                padding: 0.4rem 0.2rem;
             }
 
             .modal-content {
@@ -268,7 +266,7 @@
 <body class="p-4">
     <div class="text-center w-full h-full flex flex-col">
         <div class="game-container flex-grow">
-            <div class="mb-4 lg:mb-0 flex-shrink-0">
+            <div class="mb-2 lg:mb-0 flex-shrink-0">
                 <div class="relative">
                     <canvas id="gameBoard" width="300" height="600"></canvas>
                     <div id="gameOver" class="absolute inset-0 bg-black bg-opacity-75 flex items-center justify-center hidden">
@@ -280,7 +278,7 @@
                 </div>
             </div>
             <div class="w-full max-w-sm flex flex-col justify-between h-full lg:h-auto">
-                <div class="space-y-4">
+                <div class="space-y-2">
                     <div class="game-info">
                         <div class="border border-gray-800 p-2 lg:p-4">
                             <p class="text-sm lg:text-xl mb-1">Score: <span id="score" class="font-bold">0</span></p>
@@ -428,7 +426,7 @@
                     totalHardDrops: 0,
                     longestGame: 0
                 };
-
+    
                 const statsContent = document.getElementById('statsContent');
                 statsContent.innerHTML = `
                     <div class="stat-item"><span class="stat-label">Games Played:</span> <span class="stat-value">${stats.gamesPlayed}</span></div>
@@ -442,19 +440,19 @@
                 `;
                 document.getElementById('statsModal').style.display = 'flex';
             }
-
+    
             document.getElementById('statsButton').addEventListener('click', displayStats);
             document.getElementById('howToPlayButton').addEventListener('click', () => {
                 document.getElementById('howToPlayModal').style.display = 'flex';
             });
-
+    
             const closeButtons = document.querySelectorAll('.close');
             closeButtons.forEach(button => {
                 button.addEventListener('click', () => {
                     button.closest('.modal').style.display = 'none';
                 });
             });
-
+    
             // Close the modal when clicking outside of the modal-content
             const modals = document.querySelectorAll('.modal');
             modals.forEach(modal => {
@@ -466,4 +464,4 @@
             });
         </script>
     </body>
-</html>
+    </html>
