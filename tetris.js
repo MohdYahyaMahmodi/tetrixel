@@ -17,8 +17,20 @@ const COLS = 10;
 const BLOCK_SIZE = 30;
 const BEVEL_SIZE = 3;
 const COLORS = [
-  '#FF0D72', '#0DC2FF', '#0DFF72', '#F538FF', '#FF8E0D', '#FFE138', '#3877FF',
-  '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#DFFF00', '#FF69B4'
+  '#00FFFF',  // Cyan
+  '#FF00FF',  // Magenta
+  '#FFFF00',  // Yellow
+  '#FF4500',  // OrangeRed
+  '#32CD32',  // LimeGreen
+  '#1E90FF',  // DodgerBlue
+  '#FF1493',  // DeepPink
+  '#00FA9A',  // MediumSpringGreen
+  '#FF69B4',  // HotPink
+  '#4169E1',  // RoyalBlue
+  '#00CED1',  // DarkTurquoise
+  '#FF8C00',  // DarkOrange
+  '#7B68EE',  // MediumSlateBlue
+  '#20B2AA'   // LightSeaGreen
 ];
 
 let board = Array(ROWS).fill().map(() => Array(COLS).fill(0));
@@ -46,20 +58,14 @@ let stats = {
 };
 
 const SHAPES = [
-  [[1, 1, 1, 1]],           // I
-  [[1, 1], [1, 1]],         // O
-  [[1, 1, 1], [0, 1, 0]],   // T
-  [[1, 1, 0], [0, 1, 1]],   // Z
-  [[0, 1, 1], [1, 1, 0]],   // S
-  [[1, 1, 1], [1, 0, 0]],   // L
-  [[1, 1, 1], [0, 0, 1]],   // J
-  [[1, 1, 1], [0, 1, 0], [0, 1, 0]], // Long T
-  [[1, 1, 0], [0, 1, 0], [0, 1, 1]], // Twisted L
-  [[1, 1, 1], [1, 0, 1]],   // U
-  [[1, 1, 0], [0, 1, 1], [0, 0, 1]], // Staircase
-  [[1, 1], [1, 0], [1, 0]]  // Long L
+    [[1, 1, 1, 1]],
+    [[1, 1], [1, 1]],
+    [[1, 1, 1], [0, 1, 0]],
+    [[1, 1, 0], [0, 1, 1]],
+    [[0, 1, 1], [1, 1, 0]],
+    [[1, 1, 1], [1, 0, 0]],
+    [[1, 1, 1], [0, 0, 1]]
 ];
-
 
 function loadStats() {
     const savedStats = localStorage.getItem('tetrisStats');
@@ -240,9 +246,9 @@ class Piece {
 }
 
 function createPiece() {
-  const shapeIndex = Math.floor(Math.random() * SHAPES.length);
-  const colorIndex = Math.floor(Math.random() * COLORS.length);
-  return new Piece(SHAPES[shapeIndex], COLORS[colorIndex]);
+    const shapeIndex = Math.floor(Math.random() * SHAPES.length);
+    const colorIndex = Math.floor(Math.random() * COLORS.length);
+    return new Piece(SHAPES[shapeIndex], COLORS[colorIndex]);
 }
 
 function drawBoard() {
